@@ -1,0 +1,12 @@
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: cloud
+          - name: SPRING_R2DBC_URL
+            value: r2dbc:postgres://customers-db-postgresql.booternetes.svc.cluster.local:5432/postgres
+          - name: SPRING_R2DBC_USERNAME
+            value: customers
+          - name: SPRING_R2DBC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: customers
+                key: spring-r2dbc-password

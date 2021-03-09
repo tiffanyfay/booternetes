@@ -131,6 +131,11 @@ docker run -e SPRING_PROFILES_ACTIVE=cloud docker.io/library/customers:0.0.1-SNA
     ```
 
 ### Deploy with a database
+1. Create a PosgreSQL database using a Helm chart
+    ```bash
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm install customers-db bitnami/postgresql 
+    ```
 
 1. Configure to use a database by reading the cloud properties into a secret:
 
@@ -138,9 +143,10 @@ docker run -e SPRING_PROFILES_ACTIVE=cloud docker.io/library/customers:0.0.1-SNA
     kubectl -n booternetes create secret generic customers --from-file ./src/main/resources/application-cloud.properties
     ```
 
+ <!-- Note: It is putting the file in the right place, but doesn't seem to be using it. For now using envs that grab from the secret -->
 1. update kube deployment to mount secret as files...
 
-    ```bash
+    <!-- ```bash
         spec:
           containers:
           ...
@@ -155,8 +161,21 @@ docker run -e SPRING_PROFILES_ACTIVE=cloud docker.io/library/customers:0.0.1-SNA
             - name: config
               secret:
                 secretName: customers
-    ```
+    ``` -->
 
+    ```
+          containers:
+          ...
+            env:      
+            - name: SPRING_PROFILES_ACTIVE
+              value: cloud
+            - name: SPRING_R2DBC_USERNAME
+              value: customers
+            - name: SPRING_R2DBC_PASSWORD
+              value: Potat0wn3d
+            - name: SPRING_R2DBC_URL
+              value: r2dbc:postgres://customers-db-postgresql.booternetes.svc.cluster.local:5432/postgres
+    ```
 
 ## Scripts
 
